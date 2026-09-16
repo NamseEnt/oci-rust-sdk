@@ -1,6 +1,6 @@
 [package]
 name = "oci-rust-sdk"
-version = "0.4.5"
+version = "0.4.6"
 edition = "2024"
 description = "Unofficial Oracle OCI SDK for Rust"
 authors = ["namse"]
@@ -11,17 +11,26 @@ repository = "https://github.com/NamseEnt/oci-rust-sdk"
 warnings = "deny"
 
 [features]
-default = []
+default = ["rustls-tls-ring"]
 core = []
 containerinstances = []
 osmanagementhub = []
 resourcesearch = []
 audit = []
 
+# Which rustls backend reqwest is built with.
+#
+# `rustls-tls-ring` is the default and is what every release up to 0.4.5
+# linked unconditionally. `rustls-tls-no-provider` leaves the choice to the
+# application, which must install a rustls `CryptoProvider` before its first
+# request; pick it when the binary already runs a provider of its own, because
+# rustls refuses to choose between two and panics on the first handshake.
+rustls-tls-ring = ["reqwest/rustls-tls"]
+rustls-tls-no-provider = ["reqwest/rustls-tls-webpki-roots-no-provider"]
+
 [dependencies]
 reqwest = { version = "0.12", features = [
     "json",
-    "rustls-tls",
     "gzip",
 ], default-features = false }
 tokio = { version = "1", features = ["full"] }
